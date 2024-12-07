@@ -4,11 +4,18 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
-    "google-re2>=1.1.20240702",
-]
+dependencies = ["google-re2>=1.1.20240702", "tqdm>=4.67.1"]
 
 
 [tool.ruff]
-lint.select=["ALL"]
-lint.ignore=["D","B905", "T20", "COM812", "ISC001"]
+lint.select = ["ALL"]
+lint.ignore = [
+    "D",
+    "B905",
+    "T20",
+    "COM812",
+    "ISC001",
+    "S101",
+    "ERA001",
+    "FBT",
+]
