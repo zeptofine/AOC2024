@@ -16,40 +16,41 @@ DIR_RIGHT = (0, 1)
 DIR_DOWN = (1, 0)
 DIR_LEFT = (0, -1)
 
+d: dict[tuple[int, int], int] = {
+    DIR_UP: UP,
+    DIR_RIGHT: RIGHT,
+    DIR_DOWN: DOWN,
+    DIR_LEFT: LEFT,
+}
+
 
 def dir_to_mask(direction: tuple[int, int]) -> Anglemask:
-    return (
-        (direction[0] == -1) * (UP)
-        | (direction[0] == +1) * (DOWN)
-        | (direction[1] == -1) * (LEFT)
-        | (direction[1] == +1) * (RIGHT)
-    )
+    return d.get(direction, UP)
 
 
-@dataclass(frozen=True)
+@dataclass
 class Guard:
     position: tuple[int, int]
     direction: tuple[int, int] = (-1, 0)
 
-    def rotated(self) -> "Guard":
-        return Guard(self.position, (self.direction[1], -self.direction[0]))
-
-    def predict_next_pos(self) -> tuple[int, int]:
-        return (
+    def move(self, board: list[str]) -> Union["Guard", None]:
+        newpos = (
             self.position[0] + self.direction[0],
             self.position[1] + self.direction[1],
         )
-
-    def moved(self, board: list[str]) -> Union["Guard", None]:
-        newpos = self.predict_next_pos()
         if not (0 <= newpos[0] < len(board) and 0 <= newpos[1] < len(board[0])):
             return None
 
         if board[newpos[0]][newpos[1]] != ".":  # rotate
-            return self.rotated()
+            self.direction = (self.direction[1], -self.direction[0])
+            return self
 
         # move forward
-        return Guard(newpos, self.direction)
+        self.position = newpos
+        return self
+
+    def moved(self, board: list[str]) -> Union["Guard", None]:
+        return self.copy().move(board)
 
     def copy(self) -> "Guard":
         return Guard(self.position, self.direction)
@@ -77,7 +78,7 @@ def find_loop(grid: list[str], guard: Guard) -> dict[tuple[int, int], Anglemask]
         guard.position: dir_to_mask(guard.direction)
     }
     newguard = guard
-    while (newguard := newguard.moved(grid)) is not None:
+    while newguard.move(grid) is not None:
         m = dir_to_mask(newguard.direction)
         if m & searched_spots.get(newguard.position, 0):
             return None
@@ -89,7 +90,7 @@ def find_loop(grid: list[str], guard: Guard) -> dict[tuple[int, int], Anglemask]
 
 searched_spots = find_loop(
     grid,
-    guard,
+    guard.copy(),
 )  # there should not be one in the first instance
 assert isinstance(searched_spots, dict)
 
@@ -126,5 +127,5 @@ newgrids = list(
     }.values()
 )
 
-loops = sum(1 for g in tqdm(newgrids) if find_loop(g, original_guard) is None)
+loops = sum(1 for g in tqdm(newgrids) if find_loop(g, original_guard.copy()) is None)
 print(f"LOOPS: {loops}")
