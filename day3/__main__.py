@@ -3,7 +3,6 @@ from pathlib import Path
 import re2
 
 RE = re2.compile(r"(mul\((\d{1,3}),(\d{1,3})\)|do(n\'t)?\(\))")
-print(RE)
 
 
 def get_input() -> str:
@@ -16,8 +15,8 @@ total_unphased = 0
 total_phased = 0  # total affected by do()s and don't()s
 do = True
 for match in RE.finditer(expression):
-    print(match)
-    print(match.groups())
+    # print(match)
+    # print(match.groups())
 
     g1: str | None = match.group(2)  # type: ignore[reportAssignmentType]
     g2: str | None = match.group(3)  # type: ignore[reportAssignmentType]

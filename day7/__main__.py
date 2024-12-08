@@ -1,7 +1,4 @@
 from dataclasses import dataclass
-from itertools import (
-    product,
-)
 from pathlib import Path
 
 from tqdm import tqdm
@@ -12,37 +9,24 @@ class Eqn:
     value: int
     operands: list[int]
 
-    def try_combo(self, combo: tuple[str, ...]) -> bool:
-        it = iter(self.operands)
-        ct = iter(combo)
-        val = next(it)
-        for n in it:
-            match next(ct):
-                case "*":
-                    val *= n
-                case "+":
-                    val += n
-                case "|":
-                    val = int(f"{val}{n}")
-        return val == self.value
+    def f(self, value: int, idx: int, ops: str = "+*|") -> bool:
+        if idx >= len(self.operands):
+            return self.value == value
+        for op in ops:
+            if (
+                self.f(value + self.operands[idx], idx + 1, ops)
+                if op == "+"
+                else self.f(value * self.operands[idx], idx + 1, ops)
+                if op == "*"
+                else self.f(int(f"{value}{self.operands[idx]}"), idx + 1, ops)
+                if op == "|"
+                else False
+            ):
+                return True
+        return False
 
-    def find_operators(self) -> tuple[str, ...] | None:
-        ops = "+*"
-        combos = product(ops, repeat=len(self.operands) - 1)
-        for combo in combos:
-            if self.try_combo(combo):
-                return combo
-
-        return None
-
-    def find_operators_concat(self) -> tuple[str, ...] | None:
-        ops = "+*|"
-        combos = product(ops, repeat=len(self.operands) - 1)
-        for combo in combos:
-            if self.try_combo(combo):
-                return combo
-
-        return None
+    def find(self, ops: str) -> bool:
+        return self.f(self.operands[0], 1, ops)
 
 
 def get_input() -> list[Eqn]:
@@ -60,14 +44,14 @@ eqns = get_input()
 
 s = 0
 for eqn in tqdm(eqns):
-    if eqn.find_operators():
+    if eqn.find("+*"):
         s += eqn.value
 
 print(f"SUM: {s}")
 
 s = 0
 for eqn in tqdm(eqns):
-    if eqn.find_operators_concat():
+    if eqn.find("+*|"):
         s += eqn.value
 
 print(f"SUM AFTER CONCATS: {s}")

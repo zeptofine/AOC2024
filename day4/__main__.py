@@ -44,11 +44,8 @@ def string_exists(
                 direction,
                 new_rem,
             )
-
         return True
-
     return False
-
 
 search = get_input()
 
@@ -58,6 +55,9 @@ search = get_input()
 # points that start a MAS combination, and the direction that it creates
 mases: set[tuple[POINT, DIRECTION]] = set()
 count = 0
+
+# Find all the X-MAS combinations
+centers: dict[POINT, int] = defaultdict(int)
 
 for y in range(len(search)):
     for x in range(len(search[y])):
@@ -70,21 +70,14 @@ for y in range(len(search)):
             for direction in diag_dirs:
                 if string_exists(search, point, direction, "MAS"):
                     mases.add((point, direction))
-print(f"XMASes: {count}")
+                    center = point[0] + direction[0], point[1] + direction[1]
+                    centers[center] += 1
 
-# Find all the X-MAS combinations
-centers: dict[POINT, list[tuple[POINT, DIRECTION]]] = defaultdict(list)
-
-for mas in mases:
-    center = mas[0][0] + mas[1][0], mas[0][1] + mas[1][1]
-    centers[center].append(mas)
 
 PAIR = 2
 
 # find all centers that have multiple mases associated
-proper_count = 0
-for lst in centers.values():
-    if len(lst) == PAIR:
-        proper_count += 1
+proper_count = sum(1 for cnt in centers.values() if cnt == PAIR)
 
+print(f"XMASes: {count}")
 print(f"Diagonal X-MASes: {proper_count}")
