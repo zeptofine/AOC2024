@@ -47,6 +47,7 @@ def string_exists(
         return True
     return False
 
+
 search = get_input()
 
 
