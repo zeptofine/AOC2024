@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def get_input() -> tuple[list[int], list[int]]:
-    pth = Path(__file__).parent / "day1_input"
+    pth = Path(__file__).parent / "input"
 
     lst1 = []
     lst2 = []
