@@ -2,20 +2,20 @@ from pathlib import Path
 from time import perf_counter
 
 TOP = 9
+type Point = tuple[int, int]
+type Grid = list[list[int]]
 
 
 def search_point(
-    memory: dict[tuple[int, int], list[tuple[int, int]]],
-    grid: list[list[int]],
-    pt: tuple[int, int],
-) -> list[tuple[int, int]]:
+    memory: dict[Point, list[Point]],
+    grid: Grid,
+    pt: Point,
+) -> list[Point]:
     if pt in memory:
         return memory[pt]
-
     val = grid[pt[0]][pt[1]]
     if val == TOP:
         return [pt]
-
     s = []
     for neighbor in (
         (pt[0] - 1, pt[1]),
@@ -37,7 +37,7 @@ def search_point(
     return s
 
 
-def get_input() -> tuple[list[tuple[int, int]], list[list[int]]]:
+def get_input() -> tuple[list[Point], Grid]:
     grid = []
     trailheads = []
     with (Path(__file__).parent / "input").open() as f:
@@ -47,9 +47,7 @@ def get_input() -> tuple[list[tuple[int, int]], list[list[int]]]:
                 if c == "0":
                     trailheads.append((y, x))
                 r.append(int(c))
-
             grid.append(r)
-
     return trailheads, grid
 
 
