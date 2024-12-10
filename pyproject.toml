@@ -4,7 +4,12 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["google-re2>=1.1.20240702", "tqdm>=4.67.1"]
+dependencies = [
+    "austin-dist>=3.7.0",
+    "austin-tui>=1.2.3",
+    "google-re2>=1.1.20240702",
+    "tqdm>=4.67.1",
+]
 
 
 [tool.ruff]
